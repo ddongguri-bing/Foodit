@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import FoodList from './FoodList';
-import mockItems from '../mock.json';
+import { getFoods } from '../apis';
 
 function App() {
   const [order, setOrder] = useState('createdAt'); // 초기 상태
-  const [items, setItems] = useState(mockItems);
+  const [items, setItems] = useState([]);
 
   const handleNewestClick = () => setOrder('createdAt');
   const handleCalorieClick = () => setOrder('calorie');
@@ -14,6 +14,11 @@ function App() {
     setItems(nextItems);
   };
 
+  const handleLoadClick = async () => {
+    const { foods } = await getFoods();
+    setItems(foods);
+  };
+
   const sortedItems = items.sort((a, b) => b[order] - a[order]);
 
   return (
@@ -21,6 +26,7 @@ function App() {
       <button onClick={handleNewestClick}>최신순</button>
       <button onClick={handleCalorieClick}>칼로리순</button>
       <FoodList items={sortedItems} onDelete={handleDelete} />
+      <button onClick={handleLoadClick}>불러오기</button>
     </div>
   );
 }
