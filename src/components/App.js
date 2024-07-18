@@ -8,6 +8,7 @@ function App() {
   const [cursor, setCursor] = useState(); // 커서 기반 페이지네이션
   const [isLoading, setIsLoading] = useState(false);
   const [loadingError, setLoadingError] = useState(null);
+  const [search, setSearch] = useState('');
 
   const handleNewestClick = () => setOrder('createdAt');
   const handleCalorieClick = () => setOrder('calorie');
@@ -42,19 +43,29 @@ function App() {
   };
 
   const handleLoadMore = () => {
-    handleLoad({ order, cursor });
+    handleLoad({ order, cursor, search });
   };
 
   useEffect(() => {
-    handleLoad({ order });
-  }, [order]);
+    handleLoad({ order, search });
+  }, [order, search]);
 
   const sortedItems = items.sort((a, b) => b[order] - a[order]);
+
+  // 검색 기능
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setSearch(e.target['search'].value);
+  };
 
   return (
     <div>
       <button onClick={handleNewestClick}>최신순</button>
       <button onClick={handleCalorieClick}>칼로리순</button>
+      <form onSubmit={handleSearchSubmit}>
+        <input name="search" />
+        <button type="submit">검색</button>
+      </form>
       <FoodList items={sortedItems} onDelete={handleDelete} />
       {cursor && (
         <button disabled={isLoading} onClick={handleLoadMore}>
