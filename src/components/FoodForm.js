@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import FileInput from './FileInput';
+import useAsync from '../hooks/useAsync';
 // import './FoodForm.css';
 
 const INITIAL_VALUES = {
@@ -27,8 +28,7 @@ function FoodForm({
   onCancel,
 }) {
   const [values, setValues] = useState(initialValues);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submittingError, setSubmittingError] = useState(null);
+  const [isSubmitting, submittingError, onSubmitAsync] = useAsync(onSubmit);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,19 +38,8 @@ function FoodForm({
     formData.append('content', values.content);
     formData.append('imgFile', values.imgFile);
 
-    let result;
-
-    // submit을 여러번 입력할 경우의 로딩과 에러 처리
-    try {
-      setIsSubmitting(true);
-      setSubmittingError(null);
-      result = await onSubmit(formData);
-    } catch (error) {
-      setSubmittingError(error);
-      return;
-    } finally {
-      setIsSubmitting(false);
-    }
+    const result = await onSubmitAsync(formData);
+    if (!result) return;
 
     const { food } = result;
     onSubmitSuccess(food);

@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react';
 import FoodList from './FoodList';
 import { createFood, deleteFood, getFoods, updateFood } from '../apis';
 import FoodForm from './FoodForm';
+import useAsync from '../hooks/useAsync';
 
 function App() {
   const [order, setOrder] = useState('createdAt'); // 초기 상태
   const [items, setItems] = useState([]);
   const [cursor, setCursor] = useState(); // 커서 기반 페이지네이션
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingError, setLoadingError] = useState(null);
+  const [isLoading, loadingError, getFoodsAsync] = useAsync(getFoods);
   const [search, setSearch] = useState('');
 
   const handleNewestClick = () => setOrder('createdAt');
@@ -23,17 +23,9 @@ function App() {
   };
 
   const handleLoad = async (options) => {
-    let result;
-    try {
-      setIsLoading(true);
-      setLoadingError(null);
-      result = await getFoods(options);
-    } catch (error) {
-      setLoadingError(error);
-      return;
-    } finally {
-      setIsLoading(false);
-    }
+    const result = await getFoodsAsync(options);
+    if (!result) return;
+
     const {
       foods,
       paging: { nextCursor },
