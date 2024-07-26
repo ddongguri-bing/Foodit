@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
-function FileInput({ name, value, onChange }) {
-  const [preview, setPreview] = useState();
+function FileInput({ name, value, initialPreview, onChange }) {
+  const [preview, setPreview] = useState(initialPreview);
 
   const inputRef = useRef();
 
@@ -25,10 +25,10 @@ function FileInput({ name, value, onChange }) {
     setPreview(nextPreview);
 
     return () => {
-      setPreview();
+      setPreview(initialPreview);
       URL.revokeObjectURL(nextPreview);
     };
-  }, [value]); // value 값이 바뀔 때마다 preview 값을 바꿀 수 있음
+  }, [value, initialPreview]); // value 값이 바뀔 때마다 preview 값을 바꿀 수 있음
 
   return (
     <div>

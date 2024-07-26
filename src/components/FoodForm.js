@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import FileInput from './FileInput';
-import { createFood } from '../apis';
 // import './FoodForm.css';
 
 const INITIAL_VALUES = {
@@ -20,10 +19,16 @@ function sanitize(type, value) {
   }
 }
 
-function FoodForm({ onSUbmitSuccess }) {
+function FoodForm({
+  initialValues = INITIAL_VALUES,
+  initialPreview,
+  onSubmitSuccess,
+  onSubmit,
+  onCancel,
+}) {
+  const [values, setValues] = useState(initialValues);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittingError, setSubmittingError] = useState(null);
-  const [values, setValues] = useState(INITIAL_VALUES);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,7 +44,7 @@ function FoodForm({ onSUbmitSuccess }) {
     try {
       setIsSubmitting(true);
       setSubmittingError(null);
-      result = await createFood(formData);
+      result = await onSubmit(formData);
     } catch (error) {
       setSubmittingError(error);
       return;
@@ -48,7 +53,7 @@ function FoodForm({ onSUbmitSuccess }) {
     }
 
     const { food } = result;
-    onSUbmitSuccess(food);
+    onSubmitSuccess(food);
     setValues(INITIAL_VALUES);
   };
 
@@ -69,6 +74,7 @@ function FoodForm({ onSUbmitSuccess }) {
       <FileInput
         name="imgFile"
         value={values.imgFile}
+        initialPreview={initialPreview}
         onChange={handleChange}
       />
       <input name="title" value={values.title} onChange={handleInputChange} />
@@ -83,6 +89,7 @@ function FoodForm({ onSUbmitSuccess }) {
         value={values.content}
         onChange={handleInputChange}
       />
+      {onCancel && <button onClick={onCancel}>취소</button>}
       <button type="submit" disabled={isSubmitting}>
         확인
       </button>
