@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import FoodList from './FoodList';
 import { createFood, deleteFood, getFoods, updateFood } from '../apis';
 import FoodForm from './FoodForm';
@@ -22,21 +22,26 @@ function App() {
     setItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
-  const handleLoad = async (options) => {
-    const result = await getFoodsAsync(options);
-    if (!result) return;
+  const handleLoad = useCallback(
+    async (options) => {
+      const result = await getFoodsAsync(options);
+      if (!result) return;
 
-    const {
-      foods,
-      paging: { nextCursor },
-    } = result;
-    if (!options.cursor) {
-      setItems(foods);
-    } else {
-      setItems((prevItems) => [...prevItems, ...foods]);
-    }
-    setCursor(nextCursor);
-  };
+      const {
+        foods,
+        paging: { nextCursor },
+      } = result;
+
+      if (!options.cursor) {
+        setItems(foods);
+      } else {
+        setItems((prevItems) => [...prevItems, ...foods]);
+      }
+
+      setCursor(nextCursor);
+    },
+    [getFoodsAsync]
+  );
 
   const handleLoadMore = () => {
     handleLoad({ order, cursor, search });
@@ -59,7 +64,7 @@ function App() {
 
   useEffect(() => {
     handleLoad({ order, search });
-  }, [order, search]);
+  }, [order, search, handleLoad]);
 
   const sortedItems = items.sort((a, b) => b[order] - a[order]);
 
