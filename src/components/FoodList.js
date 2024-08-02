@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import './FoodList.css';
 import FoodForm from './FoodForm';
+import LocaleContext from '../contexts/LocaleContext';
 
 function formatDate(value) {
   const date = new Date(value);
@@ -8,6 +9,8 @@ function formatDate(value) {
 }
 
 function FoodListItem({ item, onDelete, onEdit }) {
+  const locale = useContext(LocaleContext);
+
   const { imgUrl, title, calorie, content, createdAt } = item;
 
   const handleDeleteClick = () => onDelete(item.id);
@@ -22,6 +25,7 @@ function FoodListItem({ item, onDelete, onEdit }) {
       <div>{title}</div>
       <div>{calorie}</div>
       <div>{content}</div>
+      <p>현재 언어 : {locale}</p>
       <div>{formatDate(createdAt)}</div>
       <button onClick={handleDeleteClick}>삭제</button>
       <button onClick={handleEditClick}>수정</button>
