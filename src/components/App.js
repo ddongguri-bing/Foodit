@@ -3,7 +3,9 @@ import FoodList from './FoodList';
 import { createFood, deleteFood, getFoods, updateFood } from '../apis';
 import FoodForm from './FoodForm';
 import useAsync from '../hooks/useAsync';
-import LocaleContext from '../contexts/LocaleContext';
+import { LocaleProvider } from '../contexts/LocaleContext';
+import LocaleSelect from './LocaleSelect';
+// import useTranslate from '../hooks/useTranslate';
 
 function App() {
   const [order, setOrder] = useState('createdAt'); // 초기 상태
@@ -11,6 +13,7 @@ function App() {
   const [cursor, setCursor] = useState(); // 커서 기반 페이지네이션
   const [isLoading, loadingError, getFoodsAsync] = useAsync(getFoods);
   const [search, setSearch] = useState('');
+  // const t = useTranslate();
 
   const handleNewestClick = () => setOrder('createdAt');
   const handleCalorieClick = () => setOrder('calorie');
@@ -76,10 +79,13 @@ function App() {
   };
 
   return (
-    <LocaleContext.Provider value={'ko'}>
+    <LocaleProvider defaultValue={'ko'}>
       <div>
-        <button onClick={handleNewestClick}>최신순</button>
-        <button onClick={handleCalorieClick}>칼로리순</button>
+        <LocaleSelect />
+        <div>
+          <button onClick={handleNewestClick}>최신순</button>
+          <button onClick={handleCalorieClick}>칼로리순</button>
+        </div>
         <form onSubmit={handleSearchSubmit}>
           <input name="search" />
           <button type="submit">검색</button>
@@ -98,7 +104,7 @@ function App() {
         )}
         {loadingError?.message && <p>{loadingError}</p>}
       </div>
-    </LocaleContext.Provider>
+    </LocaleProvider>
   );
 }
 
