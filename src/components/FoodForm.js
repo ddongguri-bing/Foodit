@@ -3,7 +3,7 @@ import FileInput from './FileInput';
 import useAsync from '../hooks/useAsync';
 import useTranslate from '../hooks/useTranslate';
 
-// import './FoodForm.css';
+import './FoodForm.css';
 
 const INITIAL_VALUES = {
   title: '',
@@ -62,30 +62,55 @@ function FoodForm({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="FoodForm" onSubmit={handleSubmit}>
       <FileInput
+        className="FoodForm-preview"
         name="imgFile"
         value={values.imgFile}
         initialPreview={initialPreview}
         onChange={handleChange}
       />
-      <input name="title" value={values.title} onChange={handleInputChange} />
-      <input
-        type="number"
-        name="calorie"
-        value={values.calorie}
-        onChange={handleInputChange}
-      />
-      <input
-        name="content"
-        value={values.content}
-        onChange={handleInputChange}
-      />
-      {onCancel && <button onClick={onCancel}>{t('cancle button')}</button>}
-      <button type="submit" disabled={isSubmitting}>
-        {t('confirm button')}
-      </button>
-      {submittingError?.message && <div>{submittingError.message}</div>}
+      <div className="FoodForm-rows">
+        <div className="FoodForm-title-calorie">
+          <input
+            className="FoodForm-title"
+            name="title"
+            value={values.title}
+            // placeholder={t('title placeholder')}
+            onChange={handleInputChange}
+          />
+          <input
+            className="FoodForm-calorie"
+            type="number"
+            name="calorie"
+            value={values.calorie}
+            // placeholder={t('calorie placeholder')}
+            onChange={handleInputChange}
+          />
+          {onCancel && (
+            <button
+              className="FoodForm-cancel-button"
+              type="button"
+              onClick={onCancel}>
+              {t('cancle button')}
+            </button>
+          )}
+          <button
+            className="FoodForm-submit-button"
+            type="submit"
+            disabled={isSubmitting}>
+            {t('confirm button')}
+          </button>
+        </div>
+        <textarea
+          className="FoodForm-content"
+          name="content"
+          value={values.content}
+          placeholder="내용을 작성해 주세요."
+          onChange={handleInputChange}
+        />
+        {submittingError && <p>{submittingError.message}</p>}
+      </div>
     </form>
   );
 }
